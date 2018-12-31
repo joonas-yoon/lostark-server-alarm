@@ -1,11 +1,19 @@
 import requests
+import json
 
 from bs4 import BeautifulSoup as bs
 from time import sleep
 from random import randrange
 from pushbullet import Pushbullet
+from time import gmtime, strftime
 
-PUSH = Pushbullet('<api-access-token>')
+with open('secret.json') as f:
+    data = json.load(f)
+
+ACCESS_TOKEN = data["access_token"]
+PUSH = Pushbullet(ACCESS_TOKEN)
+
+preState = {}
 
 def get_html(url):
     _html = ""
@@ -16,12 +24,11 @@ def get_html(url):
 
 
 def send_push(serverName, changes):
-    title = "[{}] 서버".format(serverName)
-    PUSH.push_list(title, changes)
+    title = "[{}]".format(serverName) + " " + "/".join(changes)
+    text = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+    PUSH.push_note(title, text)
     print(serverName, changes)
 
-
-preState = {}
 
 while True:
     URL = "https://loaq.kr/wait"
@@ -58,8 +65,6 @@ while True:
 
         if len(changes) > 0:
             send_push(name, changes)
-
-    print(preState)
 
     delay = 10.0 + randrange(1, 10)
     sleep(delay)
