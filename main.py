@@ -3,7 +3,9 @@ import requests
 from bs4 import BeautifulSoup as bs
 from time import sleep
 from random import randrange
+from pushbullet import Pushbullet
 
+PUSH = Pushbullet('<api-access-token>')
 
 def get_html(url):
     _html = ""
@@ -13,9 +15,10 @@ def get_html(url):
     return _html
 
 
-def send_push(serverName, texts):
-    print(serverName)
-    print(texts)
+def send_push(serverName, changes):
+    title = "[{}] 서버".format(serverName)
+    PUSH.push_list(title, changes)
+    print(serverName, changes)
 
 
 preState = {}
